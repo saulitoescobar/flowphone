@@ -18,8 +18,8 @@ const getUsuarios = async (pool) => {
 const createUsuario = async (pool, usuario) => {
   try {
     const [result] = await pool.execute(
-      'INSERT INTO usuarios (nombre, email, telefono, empresa_id) VALUES (?, ?, ?, ?)',
-      [usuario.nombre, usuario.email, usuario.telefono, usuario.empresa_id]
+      'INSERT INTO usuarios (nombre, email, linea, plan, empresa_id) VALUES (?, ?, ?, ?, ?)',
+      [usuario.nombre, usuario.email, usuario.linea, usuario.plan, usuario.empresa_id]
     );
     return { id: result.insertId, ...usuario };
   } catch (error) {
@@ -31,8 +31,8 @@ const createUsuario = async (pool, usuario) => {
 const updateUsuario = async (pool, id, usuario) => {
   try {
     await pool.execute(
-      'UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, empresa_id = ? WHERE id = ?',
-      [usuario.nombre, usuario.email, usuario.telefono, usuario.empresa_id, id]
+      'UPDATE usuarios SET nombre = ?, email = ?, linea = ?, plan = ?, empresa_id = ? WHERE id = ?',
+      [usuario.nombre, usuario.email, usuario.linea, usuario.plan, usuario.empresa_id, id]
     );
     return { id, ...usuario };
   } catch (error) {
@@ -64,8 +64,8 @@ const getEmpresas = async (pool) => {
 const createEmpresa = async (pool, empresa) => {
   try {
     const [result] = await pool.execute(
-      'INSERT INTO empresas (nombre, direccion, telefono, nit) VALUES (?, ?, ?, ?)',
-      [empresa.nombre, empresa.direccion, empresa.telefono, empresa.nit]
+      'INSERT INTO empresas (nombre, direccion, contacto, nit) VALUES (?, ?, ?, ?)',
+      [empresa.nombre, empresa.direccion, empresa.contacto, empresa.nit]
     );
     return { id: result.insertId, ...empresa };
   } catch (error) {
@@ -77,8 +77,8 @@ const createEmpresa = async (pool, empresa) => {
 const updateEmpresa = async (pool, id, empresa) => {
   try {
     await pool.execute(
-      'UPDATE empresas SET nombre = ?, direccion = ?, telefono = ?, nit = ? WHERE id = ?',
-      [empresa.nombre, empresa.direccion, empresa.telefono, empresa.nit, id]
+      'UPDATE empresas SET nombre = ?, direccion = ?, contacto = ?, nit = ? WHERE id = ?',
+      [empresa.nombre, empresa.direccion, empresa.contacto, empresa.nit, id]
     );
     return { id, ...empresa };
   } catch (error) {

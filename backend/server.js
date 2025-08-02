@@ -162,14 +162,29 @@ app.get('/api/dashboard/renovaciones', async (req, res) => {
 
 // ==================== FUNCIONES HELPERS ====================
 const createCrudRoutes = (entity, mockData, dbQueries) => {
-  const entityName = entity.toLowerCase();
+  // Mapear entidades a nombres de rutas
+  const routeNameMap = {
+    'Usuario': 'usuarios',
+    'Empresa': 'empresas',
+    'Plan': 'planes', 
+    'Proveedor': 'proveedores',
+    'Linea': 'lineas'
+  };
+  
+  const entityName = routeNameMap[entity] || entity.toLowerCase();
+  
+  // Nombres de funciones en queries.js
+  const getFunctionName = `get${entity}s`;  // getUsuarios, getEmpresas, etc.
+  const createFunctionName = `create${entity}`;  // createUsuario, createEmpresa, etc.
+  const updateFunctionName = `update${entity}`;  // updateUsuario, updateEmpresa, etc.
+  const deleteFunctionName = `delete${entity}`;  // deleteUsuario, deleteEmpresa, etc.
   
   // GET - Obtener todos
   app.get(`/api/${entityName}`, async (req, res) => {
     try {
-      if (USE_DATABASE && pool && dbQueries[`get${entity}`]) {
+      if (USE_DATABASE && pool && dbQueries[getFunctionName]) {
         console.log(`📋 GET /api/${entityName} - Obteniendo de MySQL`);
-        const data = await dbQueries[`get${entity}`](pool);
+        const data = await dbQueries[getFunctionName](pool);
         res.json(data);
       } else {
         console.log(`📋 GET /api/${entityName} - Usando datos mock:`, mockData.length, entityName);
@@ -184,9 +199,9 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
   // POST - Crear nuevo
   app.post(`/api/${entityName}`, async (req, res) => {
     try {
-      if (USE_DATABASE && pool && dbQueries[`create${entity}`]) {
+      if (USE_DATABASE && pool && dbQueries[createFunctionName]) {
         console.log(`➕ POST /api/${entityName} - Creando en MySQL:`, req.body);
-        const newItem = await dbQueries[`create${entity}`](pool, req.body);
+        const newItem = await dbQueries[createFunctionName](pool, req.body);
         res.json(newItem);
       } else {
         console.log(`➕ POST /api/${entityName} - Mock data:`, req.body);
@@ -205,13 +220,13 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
     }
   });
 
-  // PUT - Actualizar
+  // PUT - Actualizar existente
   app.put(`/api/${entityName}/:id`, async (req, res) => {
     try {
       const id = req.params.id;
-      if (USE_DATABASE && pool && dbQueries[`update${entity}`]) {
-        console.log(`🔄 PUT /api/${entityName}/${id} - Actualizando en MySQL`);
-        const updatedItem = await dbQueries[`update${entity}`](pool, id, req.body);
+      if (USE_DATABASE && pool && dbQueries[updateFunctionName]) {
+        console.log(`🔄 PUT /api/${entityName}/${id} - Actualizando en MySQL:`, req.body);
+        const updatedItem = await dbQueries[updateFunctionName](pool, id, req.body);
         res.json(updatedItem);
       } else {
         console.log(`🔄 PUT /api/${entityName}/${id} - Mock data:`, req.body);
@@ -233,9 +248,9 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
   app.delete(`/api/${entityName}/:id`, async (req, res) => {
     try {
       const id = req.params.id;
-      if (USE_DATABASE && pool && dbQueries[`delete${entity}`]) {
+      if (USE_DATABASE && pool && dbQueries[deleteFunctionName]) {
         console.log(`🗑️  DELETE /api/${entityName}/${id} - Eliminando de MySQL`);
-        await dbQueries[`delete${entity}`](pool, id);
+        await dbQueries[deleteFunctionName](pool, id);
         res.json({ message: `${entity} eliminado correctamente` });
       } else {
         console.log(`🗑️  DELETE /api/${entityName}/${id} - Mock data`);
@@ -255,11 +270,11 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
 };
 
 // ==================== CREAR RUTAS CRUD ====================
-createCrudRoutes('Usuarios', mockUsuarios, dbQueries);
-createCrudRoutes('Empresas', mockEmpresas, dbQueries);
-createCrudRoutes('Planes', mockPlanes, dbQueries);
-createCrudRoutes('Proveedores', mockProveedores, dbQueries);
-createCrudRoutes('Lineas', mockLineas, dbQueries);
+createCrudRoutes('Usuario', mockUsuarios, dbQueries);
+createCrudRoutes('Empresa', mockEmpresas, dbQueries);
+createCrudRoutes('Plan', mockPlanes, dbQueries);
+createCrudRoutes('Proveedor', mockProveedores, dbQueries);
+createCrudRoutes('Linea', mockLineas, dbQueries);
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {

@@ -26,11 +26,12 @@ const UsuariosPage = () => {
 
   // Configuración de columnas para la tabla
   const columns = [
-    { key: 'id', label: 'ID' },
+    { key: '#', label: '#' },
     { key: 'nombre', label: 'Nombre' },
     { key: 'email', label: 'Email' },
-    { key: 'telefono', label: 'Teléfono' },
-    { key: 'empresa', label: 'Empresa' }
+    { key: 'linea', label: 'Línea' },
+    { key: 'plan', label: 'Plan' },
+    { key: 'empresa_nombre', label: 'Empresa' }
   ];
 
   // Cargar usuarios al montar el componente
@@ -44,10 +45,17 @@ const UsuariosPage = () => {
       console.log('🔄 Cargando usuarios...');
       const data = await UsuarioService.getAll();
       console.log('✅ Usuarios recibidos:', data);
-      setUsuarios([...data]); // Crear una nueva referencia del array
+      
+      // Agregar números ordinales a los usuarios
+      const usuariosConNumeros = data.map((usuario, index) => ({
+        ...usuario,
+        '#': index + 1
+      }));
+      
+      setUsuarios([...usuariosConNumeros]); // Crear una nueva referencia del array
       setRefreshKey(prev => prev + 1); // Forzar re-render
       setError(null);
-      console.log('📊 Estado de usuarios actualizado:', data.length, 'usuarios');
+      console.log('📊 Estado de usuarios actualizado:', usuariosConNumeros.length, 'usuarios');
     } catch (err) {
       console.error('❌ Error al cargar usuarios:', err);
       setError('Error al cargar usuarios: ' + err.message);
@@ -99,12 +107,12 @@ const UsuariosPage = () => {
     try {
       console.log('💾 Datos recibidos en handleSave:', data);
       
-      // Limpiar los datos para evitar referencias circulares
+      // Limpiar los datos para enviar a la API con la estructura correcta
       const cleanData = {
         nombre: data.nombre,
         email: data.email,
-        telefono: data.telefono,
-        empresa: data.empresa,
+        linea: data.linea,
+        plan: data.plan,
         empresa_id: data.empresa_id
       };
 
@@ -249,27 +257,56 @@ const UsuariosPage = () => {
             {/* Columna derecha */}
             <div className="space-y-4">
               <div>
-                <label htmlFor="add-telefono" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Teléfono
+                <label htmlFor="add-linea" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Línea Telefónica *
                 </label>
                 <input
                   type="tel"
-                  id="add-telefono"
-                  name="telefono"
-                  value={formData.telefono || ''}
+                  id="add-linea"
+                  name="linea"
+                  value={formData.linea || ''}
                   onChange={handleChange}
                   className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
                   placeholder="555-0000"
+                  required
                 />
               </div>
               
               <div>
+                <label htmlFor="add-plan" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Plan
+                </label>
+                <select
+                  id="add-plan"
+                  name="plan"
+                  value={formData.plan || ''}
+                  onChange={handleChange}
+                  className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
+                >
+                  <option value="">Seleccionar plan...</option>
+                  <option value="Básico">Básico</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Empresarial">Empresarial</option>
+                  <option value="Corporativo">Corporativo</option>
+                  <option value="Plan 1">Plan 1</option>
+                  <option value="Plan 2">Plan 2</option>
+                  <option value="Plan 3">Plan 3</option>
+                  <option value="Plan 4">Plan 4</option>
+                  <option value="Plan 5">Plan 5</option>
+                </select>
+              </div>
+              
+              <div>
                 <label htmlFor="add-empresa" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Empresa
+                  Empresa *
                 </label>
                 <EmpresaSelector
-                  value={formData.empresa || ''}
-                  onChange={(value) => setFormData(prev => ({ ...prev, empresa: value }))}
+                  value={formData.empresa_nombre || ''}
+                  onChange={(nombre, empresa_id) => setFormData(prev => ({ 
+                    ...prev, 
+                    empresa_nombre: nombre,
+                    empresa_id: empresa_id 
+                  }))}
                   placeholder="Seleccionar empresa..."
                 />
               </div>
@@ -349,27 +386,56 @@ const UsuariosPage = () => {
             {/* Columna derecha */}
             <div className="space-y-4">
               <div>
-                <label htmlFor="edit-telefono" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Teléfono
+                <label htmlFor="edit-linea" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Línea Telefónica *
                 </label>
                 <input
                   type="tel"
-                  id="edit-telefono"
-                  name="telefono"
-                  value={formData.telefono || ''}
+                  id="edit-linea"
+                  name="linea"
+                  value={formData.linea || ''}
                   onChange={handleChange}
                   className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
                   placeholder="555-0000"
+                  required
                 />
               </div>
               
               <div>
+                <label htmlFor="edit-plan" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Plan
+                </label>
+                <select
+                  id="edit-plan"
+                  name="plan"
+                  value={formData.plan || ''}
+                  onChange={handleChange}
+                  className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
+                >
+                  <option value="">Seleccionar plan...</option>
+                  <option value="Básico">Básico</option>
+                  <option value="Premium">Premium</option>
+                  <option value="Empresarial">Empresarial</option>
+                  <option value="Corporativo">Corporativo</option>
+                  <option value="Plan 1">Plan 1</option>
+                  <option value="Plan 2">Plan 2</option>
+                  <option value="Plan 3">Plan 3</option>
+                  <option value="Plan 4">Plan 4</option>
+                  <option value="Plan 5">Plan 5</option>
+                </select>
+              </div>
+              
+              <div>
                 <label htmlFor="edit-empresa" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Empresa
+                  Empresa *
                 </label>
                 <EmpresaSelector
-                  value={formData.empresa || ''}
-                  onChange={(value) => setFormData(prev => ({ ...prev, empresa: value }))}
+                  value={formData.empresa_nombre || ''}
+                  onChange={(nombre, empresa_id) => setFormData(prev => ({ 
+                    ...prev, 
+                    empresa_nombre: nombre,
+                    empresa_id: empresa_id 
+                  }))}
                   placeholder="Seleccionar empresa..."
                 />
               </div>
@@ -438,10 +504,20 @@ const UsuariosPage = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                      Teléfono
+                      Línea Telefónica
                     </label>
                     <p className="text-lg text-gray-900">
-                      {currentUser.telefono || (
+                      {currentUser.linea || (
+                        <span className="text-gray-400 italic">No especificado</span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      Plan
+                    </label>
+                    <p className="text-lg text-gray-900">
+                      {currentUser.plan || (
                         <span className="text-gray-400 italic">No especificado</span>
                       )}
                     </p>
@@ -451,7 +527,7 @@ const UsuariosPage = () => {
                       Empresa
                     </label>
                     <p className="text-lg text-gray-900">
-                      {currentUser.empresa || (
+                      {currentUser.empresa_nombre || (
                         <span className="text-gray-400 italic">No especificado</span>
                       )}
                     </p>

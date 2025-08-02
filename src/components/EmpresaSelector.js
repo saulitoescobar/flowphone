@@ -52,14 +52,14 @@ const EmpresaSelector = ({ value, onChange, placeholder = "Seleccionar empresa..
   });
 
   const handleSelect = (empresa) => {
-    onChange(empresa.nombre);
+    onChange(empresa.nombre, empresa.id);
     setIsOpen(false);
     setSearchTerm('');
   };
 
   const handleClear = (e) => {
     e.stopPropagation();
-    onChange('');
+    onChange('', null);
   };
 
   const selectedEmpresa = empresas.find(emp => emp.nombre === value);

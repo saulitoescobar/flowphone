@@ -21,6 +21,12 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
     })
   );
 
+  // Variantes optimizadas para animaciones más rápidas y fluidas
+  const itemVariants = {
+    hidden: { opacity: 0, y: 3 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   if (loading) {
     return (
       <motion.div
@@ -59,17 +65,12 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
     );
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-
   return (
     <motion.div
       className="bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-6 shadow-xl"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      transition={{ duration: 0.2 }}
     >
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
@@ -87,8 +88,9 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
           <motion.button
             onClick={onAdd}
             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.1 }}
           >
             <PlusCircle size={20} />
             <span className="hidden sm:block">Añadir</span>
@@ -120,7 +122,7 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
                     animate="visible"
                     exit="hidden"
                     variants={itemVariants}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    transition={{ duration: 0.15 }}
                     className="hover:bg-gray-50"
                   >
                     {columns.map((col) => (
@@ -133,24 +135,27 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
                         <motion.button
                           onClick={() => onView(item.id)}
                           className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100 transition-colors"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ duration: 0.1 }}
                         >
                           <Eye size={18} />
                         </motion.button>
                         <motion.button
                           onClick={() => onEdit(item.id)}
                           className="text-indigo-600 hover:text-indigo-900 p-2 rounded-full hover:bg-indigo-100 transition-colors"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ duration: 0.1 }}
                         >
                           <Edit size={18} />
                         </motion.button>
                         <motion.button
                           onClick={() => onDelete(item.id)}
                           className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-100 transition-colors"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ duration: 0.1 }}
                         >
                           <Trash2 size={18} />
                         </motion.button>
