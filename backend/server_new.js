@@ -98,64 +98,12 @@ app.get('/api/dashboard/stats', async (req, res) => {
         planes: mockPlanes.length,
         proveedores: mockProveedores.length,
         lineasActivas: mockLineas.filter(l => l.estado === 'activa').length,
-        lineasInactivas: mockLineas.filter(l => l.estado !== 'activa').length,
-        lineasPorRenovar: 0,
-        lineasVencidas: 0
+        lineasInactivas: mockLineas.filter(l => l.estado !== 'activa').length
       };
       res.json(stats);
     }
   } catch (error) {
     console.error('Error obteniendo estadísticas:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
-
-// Endpoint para líneas próximas a renovación
-app.get('/api/lineas/renovaciones', async (req, res) => {
-  try {
-    const dias = req.query.dias || 30;
-    if (USE_DATABASE && pool) {
-      const lineas = await dbQueries.getLineasProximasRenovacion(pool, dias);
-      res.json(lineas);
-    } else {
-      // Mock data para renovaciones
-      const mockRenovaciones = [
-        {
-          id: 1,
-          numero: '555-1001',
-          usuario_nombre: 'Juan Pérez',
-          empresa_nombre: 'TechCorp',
-          plan_nombre: 'Plan Premium',
-          fecha_renovacion: '2025-08-15',
-          dias_para_renovacion: 13,
-          estado_renovacion: 'proxima'
-        }
-      ];
-      res.json(mockRenovaciones);
-    }
-  } catch (error) {
-    console.error('Error obteniendo líneas próximas a renovación:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
-
-// Endpoint para resumen de renovaciones
-app.get('/api/dashboard/renovaciones', async (req, res) => {
-  try {
-    if (USE_DATABASE && pool) {
-      const resumen = await dbQueries.getResumenRenovaciones(pool);
-      res.json(resumen);
-    } else {
-      // Mock data para resumen
-      const mockResumen = {
-        proximos7Dias: 2,
-        proximos30Dias: 8,
-        vencidas: 3
-      };
-      res.json(mockResumen);
-    }
-  } catch (error) {
-    console.error('Error obteniendo resumen de renovaciones:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
@@ -272,7 +220,5 @@ app.listen(PORT, () => {
   console.log('   GET /api/proveedores');
   console.log('   GET /api/lineas');
   console.log('   GET /api/dashboard/stats');
-  console.log('   GET /api/lineas/renovaciones');
-  console.log('   GET /api/dashboard/renovaciones');
   console.log('   POST/PUT/DELETE para todas las entidades');
 });

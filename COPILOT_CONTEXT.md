@@ -45,20 +45,28 @@ Un sistema web completo para gestionar líneas telefónicas empresariales con:
 - CORS: Configurado para desarrollo local
 ```
 
-## 🔧 Configuración de Desarrollo
+## 🔧 Configuración de Desarrollo - SIMPLIFICADA
 
-### Puertos
-- **Frontend:** http://localhost:3000
-- **Backend:** http://localhost:3002
-
-### Comandos de inicio
+### Comando único para todo
 ```bash
-# Backend
-cd backend && node server.js
-
-# Frontend  
-npm start
+npm run dev  # Inicia frontend (3000) + backend (3002)
 ```
+
+### Scripts disponibles
+```bash
+npm run setup      # Instala todo e inicia  
+npm run dev        # Frontend + backend juntos
+npm run install-all # Instala todas las dependencias
+npm start          # Solo frontend
+npm run backend    # Solo backend
+./kill-ports.ps1   # Libera puertos ocupados
+```
+
+### Variables de entorno (.env)
+- Frontend: puerto 3000
+- Backend: puerto 3002  
+- API: http://localhost:3002/api
+- Modo: desarrollo con datos mock
 
 ## 🧠 Problemas Resueltos en la Última Sesión
 
@@ -146,9 +154,12 @@ const handleSave = async (data) => {
 # Ver estado del proyecto
 git status
 
-# Iniciar desarrollo
-cd backend && node server.js  # Terminal 1
-npm start                     # Terminal 2
+# Iniciar desarrollo (SIMPLIFICADO)
+npm run dev           # Todo en uno!
+
+# Si hay problemas con puertos  
+./kill-ports.ps1      # Libera puertos
+npm run dev           # Reinicia
 
 # Probar APIs
 Invoke-RestMethod -Uri "http://localhost:3002/api/usuarios" -Method Get

@@ -1,12 +1,13 @@
 {
-  "name": "phoneflow-backend",
+  "name": "flowphone-backend",
   "version": "1.0.0",
-  "description": "Backend API para PhoneFlow",
+  "description": "Backend API para FlowPhone - Sistema de gestión de líneas telefónicas",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "migrate": "node scripts/migrate.js",
+    "test": "echo \"No tests yet\" && exit 0",
+    "setup-db": "node scripts/setupDatabase.js",
     "test-db": "node scripts/testConnection.js"
   },
   "dependencies": {

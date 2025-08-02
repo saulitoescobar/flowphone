@@ -1,186 +1,118 @@
-# Sistema de Gestión de Líneas Telefónicas
+# 📱 FlowPhone - Sistema de Gestión de Líneas Telefónicas
 
-Una aplicación web completa para la gestión de líneas telefónicas, usuarios, empresas, planes y proveedores.
+Un sistema web completo para gestionar líneas telefónicas empresariales con interfaz moderna y API REST.
 
-## 🚀 Características
+## ✨ Características
 
-- **Frontend**: React 18 con Tailwind CSS y Framer Motion
-- **Backend**: Node.js con Express
-- **Base de datos**: MySQL (con modo mock para desarrollo)
-- **Interfaz moderna**: Componentes reutilizables y animaciones fluidas
-- **CRUD completo**: Crear, leer, actualizar y eliminar para todas las entidades
+- 🎯 **5 Entidades**: Usuarios, Empresas, Líneas, Planes, Proveedores
+- 🎨 **Interfaz Moderna**: React 18 + Tailwind CSS + Framer Motion
+- 🚀 **API REST**: Node.js + Express con datos mock
+- 📱 **Responsive**: Funciona en desktop y móvil
+- 🔍 **Búsqueda Avanzada**: Búsqueda en tiempo real con normalización
+- ✅ **CRUD Completo**: Crear, leer, actualizar, eliminar
 
-## 📋 Entidades del Sistema
+## 🚀 Inicio Rápido
 
-1. **Usuarios** - Gestión de usuarios del sistema
-2. **Empresas** - Administración de empresas clientes
-3. **Líneas** - Control de líneas telefónicas
-4. **Planes** - Gestión de planes de servicio
-5. **Proveedores** - Administración de proveedores de servicios
-
-## 🛠️ Tecnologías Utilizadas
-
-### Frontend
-- React 18
-- Tailwind CSS
-- Framer Motion
-- Lucide Icons
-- React Hooks
-
-### Backend
-- Node.js
-- Express.js
-- MySQL2
-- CORS
-- JSON parsing
-
-## 📦 Instalación
-
-### Prerrequisitos
-- Node.js (v14 o superior)
-- MySQL (opcional, funciona con datos mock)
-- Git
-
-### Pasos de instalación
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone <url-del-repositorio>
-   cd lineas
-   ```
-
-2. **Instalar dependencias del frontend**
-   ```bash
-   npm install
-   ```
-
-3. **Instalar dependencias del backend**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-4. **Configurar la base de datos (opcional)**
-   - Crear una base de datos MySQL
-   - Configurar las credenciales en `backend/config/database.js`
-   - Ejecutar los scripts de migración en `backend/scripts/`
-
-## 🚀 Ejecución
-
-### Modo Desarrollo
-
-1. **Iniciar el backend** (en una terminal)
-   ```bash
-   cd backend
-   node server.js
-   ```
-   El backend estará disponible en `http://localhost:3002`
-
-2. **Iniciar el frontend** (en otra terminal)
-   ```bash
-   npm start
-   ```
-   El frontend estará disponible en `http://localhost:3000`
-
-### Modo Producción
-
+### Opción 1: Configuración Automática (Recomendada)
 ```bash
-npm run build
+# Windows PowerShell
+./setup.ps1
+
+# O comando directo
+npm run setup
 ```
+
+### Opción 2: Configuración Manual
+```bash
+# 1. Instalar dependencias
+npm install
+cd backend && npm install && cd ..
+
+# 2. Iniciar todo junto
+npm run dev
+
+# O por separado:
+npm run backend  # Solo backend (puerto 3002)
+npm start        # Solo frontend (puerto 3000)
+```
+
+## 🌐 URLs de Acceso
+
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:3002  
+- **API**: http://localhost:3002/api
+
+## 📁 Estructura Simplificada
+
+```
+flowphone/
+├── src/                 # Frontend React
+│   ├── components/      # Componentes reutilizables
+│   ├── pages/          # Páginas principales
+│   └── services/       # Servicios API
+├── backend/            # Backend Node.js
+│   ├── server.js       # Servidor principal (con mock data)
+│   ├── routes/         # Rutas API (para DB real)
+│   └── models/         # Modelos de datos
+├── public/             # Archivos estáticos
+├── .env               # Variables de entorno
+└── package.json       # Scripts simplificados
+```
+
+## 🎯 Scripts Disponibles
+
+| Script | Descripción |
+|--------|-------------|
+| `npm run setup` | Instala todo y inicia el proyecto |
+| `npm run dev` | Inicia frontend + backend |
+| `npm start` | Solo frontend |
+| `npm run backend` | Solo backend |
+| `npm run build` | Build para producción |
 
 ## 🔧 Configuración
 
-### Backend
-- Puerto por defecto: `3002`
-- Base de datos: MySQL (configurar en `backend/config/database.js`)
-- Modo mock: Activado por defecto si MySQL no está disponible
+El archivo `.env` contiene toda la configuración:
+- Puertos del frontend (3000) y backend (3002)
+- URL de la API
+- Configuración de base de datos (opcional)
 
-### Frontend
-- Puerto por defecto: `3000`
-- API Base URL: `http://localhost:3002/api`
+## 📊 Estado del Proyecto
 
-## 📁 Estructura del Proyecto
+✅ **Completamente Funcional**
+- Interfaz de usuario completa
+- CRUD para todas las entidades  
+- API REST funcionando
+- Datos mock con persistencia
+- Búsqueda y filtros
+- Diseño responsive
 
-```
-lineas/
-├── backend/                 # Servidor Node.js
-│   ├── config/             # Configuración de BD
-│   ├── controllers/        # Controladores de API
-│   ├── models/             # Modelos de datos
-│   ├── routes/             # Rutas de API
-│   ├── scripts/            # Scripts de migración
-│   └── server.js           # Servidor principal
-├── src/                    # Frontend React
-│   ├── components/         # Componentes reutilizables
-│   ├── pages/              # Páginas de la aplicación
-│   ├── services/           # Servicios de API
-│   └── App.js              # Componente principal
-└── public/                 # Archivos estáticos
-```
+## 🎨 Tecnologías
 
-## 🎯 Funcionalidades
+**Frontend**
+- React 18
+- Tailwind CSS
+- Framer Motion
+- Lucide React (iconos)
+- React Router
 
-### Gestión de Usuarios
-- ✅ Listar usuarios con paginación y búsqueda
-- ✅ Crear nuevos usuarios
-- ✅ Editar usuarios existentes
-- ✅ Eliminar usuarios
-- ✅ Selector de empresas con búsqueda
+**Backend**  
+- Node.js
+- Express
+- CORS
+- Datos mock en memoria
 
-### Gestión de Empresas
-- ✅ CRUD completo de empresas
-- ✅ Campo NIT obligatorio
-- ✅ Validación de datos
+## 📝 Uso
 
-### Gestión de Líneas
-- ✅ Control de líneas telefónicas
-- ✅ Asignación de usuarios, empresas y planes
-- ✅ Estado de líneas (activa/inactiva)
+1. Ejecuta `npm run dev`
+2. Abre http://localhost:3000
+3. Navega entre las secciones: Usuarios, Empresas, Líneas, Planes, Proveedores
+4. Usa los botones para agregar, editar o eliminar registros
+5. Utiliza la búsqueda para filtrar resultados
 
-### Gestión de Planes y Proveedores
-- ✅ Administración completa
-- ✅ Integración con otras entidades
+## 🔄 Próximos Pasos
 
-## 🔄 API Endpoints
-
-### Usuarios
-- `GET /api/usuarios` - Listar usuarios
-- `POST /api/usuarios` - Crear usuario
-- `PUT /api/usuarios/:id` - Actualizar usuario
-- `DELETE /api/usuarios/:id` - Eliminar usuario
-
-### Empresas
-- `GET /api/empresas` - Listar empresas
-- `POST /api/empresas` - Crear empresa
-- `PUT /api/empresas/:id` - Actualizar empresa
-- `DELETE /api/empresas/:id` - Eliminar empresa
-
-*(Similar para líneas, planes y proveedores)*
-
-## 🧪 Modo Mock
-
-El sistema incluye un modo mock completo que permite:
-- Desarrollo sin base de datos
-- Persistencia de datos en memoria durante la sesión
-- Todas las operaciones CRUD funcionales
-- Ideal para demos y desarrollo inicial
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
-
-## 👥 Autores
-
-- Desarrollado con ❤️ para la gestión eficiente de líneas telefónicas
-
-## 🆘 Soporte
-
-Si tienes alguna pregunta o problema, por favor abre un issue en el repositorio.
+- [ ] Conectar base de datos MySQL real
+- [ ] Sistema de autenticación
+- [ ] Dashboard con gráficos
+- [ ] Reportes y exportación
+- [ ] Tests unitarios
