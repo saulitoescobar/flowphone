@@ -29,6 +29,7 @@ const UsuariosPage = () => {
     { key: '#', label: '#' },
     { key: 'nombre', label: 'Nombre' },
     { key: 'email', label: 'Email' },
+    { key: 'dpi', label: 'DPI' },
     { key: 'linea', label: 'Línea' },
     { key: 'plan', label: 'Plan' },
     { key: 'empresa_nombre', label: 'Empresa' }
@@ -111,6 +112,7 @@ const UsuariosPage = () => {
       const cleanData = {
         nombre: data.nombre,
         email: data.email,
+        dpi: data.dpi,
         linea: data.linea,
         plan: data.plan,
         empresa_id: data.empresa_id
@@ -252,6 +254,24 @@ const UsuariosPage = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label htmlFor="add-dpi" className="block text-sm font-semibold text-gray-700 mb-2">
+                  DPI *
+                </label>
+                <input
+                  type="text"
+                  id="add-dpi"
+                  name="dpi"
+                  value={formData.dpi || ''}
+                  onChange={handleChange}
+                  className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
+                  placeholder="1234567890123"
+                  pattern="[0-9]{13}"
+                  maxLength="13"
+                  required
+                />
+              </div>
             </div>
             
             {/* Columna derecha */}
@@ -381,6 +401,24 @@ const UsuariosPage = () => {
                   required
                 />
               </div>
+
+              <div>
+                <label htmlFor="edit-dpi" className="block text-sm font-semibold text-gray-700 mb-2">
+                  DPI *
+                </label>
+                <input
+                  type="text"
+                  id="edit-dpi"
+                  name="dpi"
+                  value={formData.dpi || ''}
+                  onChange={handleChange}
+                  className="shadow-sm border border-gray-300 rounded-xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all duration-200"
+                  placeholder="1234567890123"
+                  pattern="[0-9]{13}"
+                  maxLength="13"
+                  required
+                />
+              </div>
             </div>
             
             {/* Columna derecha */}
@@ -498,6 +536,16 @@ const UsuariosPage = () => {
                       Correo Electrónico
                     </label>
                     <p className="text-lg text-blue-600 break-all">{currentUser.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      DPI
+                    </label>
+                    <p className="text-lg text-gray-900">
+                      {currentUser.dpi || (
+                        <span className="text-gray-400 italic">No especificado</span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 

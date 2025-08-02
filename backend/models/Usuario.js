@@ -3,7 +3,7 @@ const { pool } = require('../config/database');
 class Usuario {
   static async getAll() {
     const [rows] = await pool.execute(`
-      SELECT id, nombre, email, telefono, empresa, created_at, updated_at
+      SELECT id, nombre, email, dpi, telefono, empresa, created_at, updated_at
       FROM usuarios 
       ORDER BY created_at DESC
     `);
@@ -19,19 +19,19 @@ class Usuario {
   }
 
   static async create(userData) {
-    const { nombre, email, telefono, empresa } = userData;
+    const { nombre, email, dpi, telefono, empresa } = userData;
     const [result] = await pool.execute(
-      'INSERT INTO usuarios (nombre, email, telefono, empresa) VALUES (?, ?, ?, ?)',
-      [nombre, email, telefono, empresa]
+      'INSERT INTO usuarios (nombre, email, dpi, telefono, empresa) VALUES (?, ?, ?, ?, ?)',
+      [nombre, email, dpi, telefono, empresa]
     );
     return result.insertId;
   }
 
   static async update(id, userData) {
-    const { nombre, email, telefono, empresa } = userData;
+    const { nombre, email, dpi, telefono, empresa } = userData;
     const [result] = await pool.execute(
-      'UPDATE usuarios SET nombre = ?, email = ?, telefono = ?, empresa = ? WHERE id = ?',
-      [nombre, email, telefono, empresa, id]
+      'UPDATE usuarios SET nombre = ?, email = ?, dpi = ?, telefono = ?, empresa = ? WHERE id = ?',
+      [nombre, email, dpi, telefono, empresa, id]
     );
     return result.affectedRows > 0;
   }

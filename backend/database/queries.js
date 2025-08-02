@@ -197,7 +197,15 @@ const deleteProveedor = async (pool, id) => {
 const getLineas = async (pool) => {
   try {
     const [rows] = await pool.execute(`
-      SELECT l.*, u.nombre as usuario_nombre, p.nombre as plan_nombre, e.nombre as empresa_nombre
+      SELECT l.*, 
+             u.nombre as usuario_nombre,
+             u.dpi as usuario_dpi,
+             p.nombre as plan_nombre, 
+             p.precio, 
+             p.datos, 
+             p.llamadas,
+             e.nombre as empresa_nombre,
+             e.nit as empresa_nit
       FROM lineas l 
       LEFT JOIN usuarios u ON l.usuario_id = u.id
       LEFT JOIN planes p ON l.plan_id = p.id

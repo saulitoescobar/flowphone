@@ -21,18 +21,20 @@ const LineasPage = () => {
   const [currentId, setCurrentId] = useState(null);
   const [currentLinea, setCurrentLinea] = useState(null);
   const [formData, setFormData] = useState({});
+  const [refreshKey, setRefreshKey] = useState(0); // Para forzar re-renders
   
   // Hook para las notificaciones
   const { showToast, ToastComponent } = useToast();
 
-  // Configuración de columnas para la tabla
+  // Configuración de columnas para la tabla con más información
   const columns = [
-    { key: 'id', label: 'ID' },
+    { key: '#', label: '#' },
     { key: 'numero', label: 'Número' },
-    { key: 'usuario_nombre', label: 'Usuario' },
-    { key: 'empresa_nombre', label: 'Empresa' },
-    { key: 'plan_nombre', label: 'Plan' },
-    { key: 'estado', label: 'Estado' }
+    { key: 'usuario_display', label: 'USUARIO' },
+    { key: 'empresa_display', label: 'EMPRESA' },
+    { key: 'plan_display', label: 'PLAN' },
+    { key: 'costo_display', label: 'COSTO' },
+    { key: 'estado_display', label: 'Estado' }
   ];
 
   // Cargar líneas al montar el componente
@@ -43,14 +45,36 @@ const LineasPage = () => {
   const loadLineas = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Cargando líneas...');
       const data = await LineaService.getAll();
-      setLineas(data);
+      console.log('✅ Líneas recibidas:', data);
+      
+      // Agregar números ordinales y campos display mejorados a las líneas
+      const lineasConNumeros = data.map((linea, index) => ({
+        ...linea,
+        '#': index + 1,
+        usuario_display: linea.usuario_nombre ? 
+          `${linea.usuario_nombre}${linea.usuario_dpi ? ` • DPI: ${linea.usuario_dpi}` : ''}` : 
+          'Disponible',
+        empresa_display: linea.empresa_nombre ?
+          `${linea.empresa_nombre}${linea.empresa_nit ? ` • NIT: ${linea.empresa_nit}` : ''}` :
+          'Sin empresa',
+        plan_display: linea.plan_nombre || 'Sin plan',
+        costo_display: linea.precio ? `Q${Number(linea.precio).toLocaleString()}` : 'Sin costo',
+        estado_display: linea.estado || 'activa'
+      }));
+      
+      setLineas([...lineasConNumeros]); // Crear una nueva referencia del array
+      setRefreshKey(prev => prev + 1); // Forzar re-render
       setError(null);
+      console.log('📊 Estado de líneas actualizado:', lineasConNumeros.length, 'líneas');
     } catch (err) {
+      console.error('❌ Error al cargar líneas:', err);
       setError('Error al cargar líneas: ' + err.message);
       console.error('Error loading lineas:', err);
     } finally {
       setLoading(false);
+      console.log('✅ Carga de líneas completada');
     }
   };
 
@@ -93,26 +117,38 @@ const LineasPage = () => {
 
   const handleSave = async (data) => {
     try {
+      console.log('💾 Datos recibidos en handleSave:', data);
+      
+      // Limpiar los datos para enviar a la API con la estructura correcta
       const cleanData = {
         numero: data.numero,
         usuario_id: data.usuario_id,
         empresa_id: data.empresa_id,
         plan_id: data.plan_id,
-        estado: data.estado,
+        estado: data.estado || 'activa',
         fecha_activacion: data.fecha_activacion || null
       };
 
+      console.log('🧹 Datos limpiados:', cleanData);
+
       if (isAdding) {
-        await LineaService.create(cleanData);
+        console.log('➕ Creando línea...');
+        const result = await LineaService.create(cleanData);
+        console.log('✅ Línea creada:', result);
         showToast('Línea creada correctamente', 'success');
       } else {
-        await LineaService.update(currentId, cleanData);
+        console.log('✏️ Actualizando línea con ID:', currentId);
+        const result = await LineaService.update(currentId, cleanData);
+        console.log('✅ Línea actualizada:', result);
         showToast('Línea actualizada correctamente', 'success');
       }
       
-      await loadLineas();
-      handleCancel();
+      console.log('🔄 Recargando lista de líneas...');
+      await loadLineas(); // Recargar la lista
+      console.log('🚪 Cerrando formulario...');
+      handleCancel(); // Cerrar el formulario
     } catch (err) {
+      console.error('❌ Error en handleSave:', err);
       showToast('Error al guardar línea: ' + err.message, 'error');
     }
   };
@@ -173,6 +209,7 @@ const LineasPage = () => {
         className="container mx-auto px-4 pt-20"
       >
         <DataTable
+          key={`lineas-table-${refreshKey}`}
           title="Listado de Líneas Telefónicas"
           data={lineas}
           columns={columns}
@@ -213,14 +250,20 @@ const LineasPage = () => {
             
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Usuario *
+                Usuario (Opcional)
               </label>
               <UsuarioSelector
                 value={formData.usuario_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, usuario_id: id }))}
-                placeholder="Selecciona un usuario"
-                error={!formData.usuario_id && isAdding ? 'Usuario es requerido' : null}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  usuario_id: id,
+                  usuario_nombre: nombre 
+                }))}
+                placeholder="Línea disponible (sin usuario asignado)"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Deja vacío para línea disponible
+              </p>
             </div>
             
             <div>
@@ -228,10 +271,13 @@ const LineasPage = () => {
                 Empresa *
               </label>
               <EmpresaSelector
-                value={formData.empresa_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, empresa_id: id }))}
+                value={formData.empresa_nombre || ''}
+                onChange={(nombre, empresa_id) => setFormData(prev => ({ 
+                  ...prev, 
+                  empresa_nombre: nombre,
+                  empresa_id: empresa_id 
+                }))}
                 placeholder="Selecciona una empresa"
-                error={!formData.empresa_id && isAdding ? 'Empresa es requerida' : null}
               />
             </div>
             
@@ -241,9 +287,12 @@ const LineasPage = () => {
               </label>
               <PlanSelector
                 value={formData.plan_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, plan_id: id }))}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  plan_id: id,
+                  plan_nombre: nombre 
+                }))}
                 placeholder="Selecciona un plan"
-                error={!formData.plan_id && isAdding ? 'Plan es requerido' : null}
               />
             </div>
             
@@ -334,14 +383,20 @@ const LineasPage = () => {
             
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Usuario *
+                Usuario (Opcional)
               </label>
               <UsuarioSelector
                 value={formData.usuario_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, usuario_id: id }))}
-                placeholder="Selecciona un usuario"
-                error={!formData.usuario_id && isEditing ? 'Usuario es requerido' : null}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  usuario_id: id,
+                  usuario_nombre: nombre 
+                }))}
+                placeholder="Línea disponible (sin usuario asignado)"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Deja vacío para línea disponible
+              </p>
             </div>
             
             <div>
@@ -349,10 +404,13 @@ const LineasPage = () => {
                 Empresa *
               </label>
               <EmpresaSelector
-                value={formData.empresa_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, empresa_id: id }))}
+                value={formData.empresa_nombre || ''}
+                onChange={(nombre, empresa_id) => setFormData(prev => ({ 
+                  ...prev, 
+                  empresa_nombre: nombre,
+                  empresa_id: empresa_id 
+                }))}
                 placeholder="Selecciona una empresa"
-                error={!formData.empresa_id && isEditing ? 'Empresa es requerida' : null}
               />
             </div>
             
@@ -362,9 +420,12 @@ const LineasPage = () => {
               </label>
               <PlanSelector
                 value={formData.plan_id}
-                onChange={(id) => setFormData(prev => ({ ...prev, plan_id: id }))}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  plan_id: id,
+                  plan_nombre: nombre 
+                }))}
                 placeholder="Selecciona un plan"
-                error={!formData.plan_id && isEditing ? 'Plan es requerido' : null}
               />
             </div>
             

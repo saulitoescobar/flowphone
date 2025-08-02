@@ -127,7 +127,90 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
                   >
                     {columns.map((col) => (
                       <td key={col.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        {item[col.key]}
+                        {col.key === 'usuario_display' ? (
+                          <div className="flex flex-col">
+                            {item[col.key]?.includes('Disponible') ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Disponible
+                              </span>
+                            ) : (
+                              <div>
+                                <span className="font-medium text-blue-900 block">
+                                  {item.usuario_nombre}
+                                </span>
+                                {item.usuario_dpi && (
+                                  <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                                    DPI: {item.usuario_dpi}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ) : col.key === 'empresa_display' ? (
+                          <div className="flex flex-col">
+                            {item.empresa_nombre ? (
+                              <div>
+                                <span className="font-medium text-purple-900 block">
+                                  {item.empresa_nombre}
+                                </span>
+                                {item.empresa_nit && (
+                                  <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded">
+                                    NIT: {item.empresa_nit}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">Sin empresa</span>
+                            )}
+                          </div>
+                        ) : col.key === 'plan_display' ? (
+                          <div className="flex flex-col">
+                            {item.plan_nombre ? (
+                              <div>
+                                <span className="font-medium text-indigo-900">{item.plan_nombre}</span>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {item.datos && (
+                                    <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                                      {item.datos}
+                                    </span>
+                                  )}
+                                  {item.llamadas && (
+                                    <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                                      {item.llamadas}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">Sin plan</span>
+                            )}
+                          </div>
+                        ) : col.key === 'costo_display' ? (
+                          <div className="flex flex-col">
+                            {item.precio ? (
+                              <span className="text-green-700 font-bold bg-green-50 px-2 py-1 rounded">
+                                Q{Number(item.precio).toLocaleString()}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 italic">Sin costo</span>
+                            )}
+                          </div>
+                        ) : col.key === 'estado_display' ? (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            item.estado === 'activa' ? 'bg-green-100 text-green-800' :
+                            item.estado === 'suspendida' ? 'bg-yellow-100 text-yellow-800' :
+                            item.estado === 'cancelada' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {item.estado || 'activa'}
+                          </span>
+                        ) : col.key === 'numero' ? (
+                          <span className="font-mono text-gray-900 font-medium">
+                            {item[col.key]}
+                          </span>
+                        ) : (
+                          item[col.key]
+                        )}
                       </td>
                     ))}
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

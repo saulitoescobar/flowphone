@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Users, Phone, Building, Briefcase, LayoutGrid, Settings } from 'lucide-react';
 
 const navItems = [
@@ -15,6 +15,15 @@ const navItems = [
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
+
+  // Función para determinar si una ruta está activa
+  const isActivePath = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
 
   // Detectar si es móvil
   React.useEffect(() => {
@@ -82,11 +91,27 @@ const Sidebar = () => {
               >
                 <Link
                   to={item.path}
-                  className="flex items-center gap-4 p-3 rounded-xl text-gray-300 hover:bg-blue-700 hover:text-white transition-all duration-200 group"
+                  className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-200 group ${
+                    isActivePath(item.path)
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                      : 'text-gray-300 hover:bg-blue-700 hover:text-white'
+                  }`}
                   onClick={() => isMobile && setIsOpen(false)}
                 >
-                  <item.icon className="w-6 h-6 text-blue-400 group-hover:text-white transition-colors" />
+                  <item.icon className={`w-6 h-6 transition-colors ${
+                    isActivePath(item.path)
+                      ? 'text-white'
+                      : 'text-blue-400 group-hover:text-white'
+                  }`} />
                   <span className="text-lg font-medium">{item.name}</span>
+                  {isActivePath(item.path) && (
+                    <motion.div
+                      className="ml-auto w-2 h-2 bg-white rounded-full"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
                 </Link>
               </motion.li>
             ))}
