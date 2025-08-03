@@ -205,11 +205,14 @@ const getLineas = async (pool) => {
              p.datos, 
              p.llamadas,
              e.nombre as empresa_nombre,
-             e.nit as empresa_nit
+             e.nit as empresa_nit,
+             pr.nombre as proveedor_nombre,
+             pr.contacto as proveedor_contacto
       FROM lineas l 
       LEFT JOIN usuarios u ON l.usuario_id = u.id
       LEFT JOIN planes p ON l.plan_id = p.id
       LEFT JOIN empresas e ON l.empresa_id = e.id
+      LEFT JOIN proveedores pr ON l.proveedor_id = pr.id
       ORDER BY l.created_at DESC
     `);
     return rows;
@@ -222,8 +225,8 @@ const getLineas = async (pool) => {
 const createLinea = async (pool, linea) => {
   try {
     const [result] = await pool.execute(
-      'INSERT INTO lineas (numero, usuario_id, plan_id, empresa_id, estado) VALUES (?, ?, ?, ?, ?)',
-      [linea.numero, linea.usuario_id, linea.plan_id, linea.empresa_id, linea.estado || 'activa']
+      'INSERT INTO lineas (numero, usuario_id, plan_id, empresa_id, proveedor_id, estado) VALUES (?, ?, ?, ?, ?, ?)',
+      [linea.numero, linea.usuario_id, linea.plan_id, linea.empresa_id, linea.proveedor_id, linea.estado || 'activa']
     );
     return { id: result.insertId, ...linea };
   } catch (error) {
@@ -235,8 +238,8 @@ const createLinea = async (pool, linea) => {
 const updateLinea = async (pool, id, linea) => {
   try {
     await pool.execute(
-      'UPDATE lineas SET numero = ?, usuario_id = ?, plan_id = ?, empresa_id = ?, estado = ? WHERE id = ?',
-      [linea.numero, linea.usuario_id, linea.plan_id, linea.empresa_id, linea.estado, id]
+      'UPDATE lineas SET numero = ?, usuario_id = ?, plan_id = ?, empresa_id = ?, proveedor_id = ?, estado = ? WHERE id = ?',
+      [linea.numero, linea.usuario_id, linea.plan_id, linea.empresa_id, linea.proveedor_id, linea.estado, id]
     );
     return { id, ...linea };
   } catch (error) {

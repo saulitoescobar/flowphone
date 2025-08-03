@@ -9,6 +9,10 @@ class LineaService {
     return ApiService.get(`/lineas/${id}`);
   }
 
+  static async getByProveedor(proveedorId) {
+    return ApiService.get(`/lineas/proveedor/${proveedorId}`);
+  }
+
   static async create(linea) {
     return ApiService.post('/lineas', linea);
   }

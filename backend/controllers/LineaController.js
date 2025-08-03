@@ -27,6 +27,23 @@ class LineaController {
     }
   }
 
+  static async getByProveedor(req, res) {
+    try {
+      const { proveedorId } = req.params;
+      console.log(`🔍 Buscando líneas del proveedor ID: ${proveedorId}`);
+      
+      const lineas = await Linea.getByProveedor(proveedorId);
+      console.log(`✅ Se encontraron ${lineas.length} líneas para el proveedor`);
+      res.json(lineas);
+    } catch (error) {
+      console.error('❌ Error al obtener líneas del proveedor:', error);
+      res.status(500).json({ 
+        error: 'Error interno del servidor', 
+        details: error.message 
+      });
+    }
+  }
+
   static async create(req, res) {
     try {
       const lineaId = await Linea.create(req.body);

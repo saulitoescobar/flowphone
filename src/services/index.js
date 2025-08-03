@@ -5,3 +5,4 @@ export { default as LineaService } from './LineaService';
 export { default as ProveedorService } from './ProveedorService';
 export { default as EmpresaService } from './EmpresaService';
 export { default as PlanService } from './PlanService';
+export { default as AsesorService } from './AsesorService';

@@ -6,6 +6,9 @@ const router = express.Router();
 // GET /api/lineas - Obtener todas las líneas
 router.get('/', LineaController.getAll);
 
+// GET /api/lineas/proveedor/:proveedorId - Obtener líneas por proveedor
+router.get('/proveedor/:proveedorId', LineaController.getByProveedor);
+
 // GET /api/lineas/:id - Obtener línea por ID
 router.get('/:id', LineaController.getById);
 

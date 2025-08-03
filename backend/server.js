@@ -173,11 +173,19 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
   
   const entityName = routeNameMap[entity] || entity.toLowerCase();
   
-  // Nombres de funciones en queries.js
-  const getFunctionName = `get${entity}s`;  // getUsuarios, getEmpresas, etc.
-  const createFunctionName = `create${entity}`;  // createUsuario, createEmpresa, etc.
-  const updateFunctionName = `update${entity}`;  // updateUsuario, updateEmpresa, etc.
-  const deleteFunctionName = `delete${entity}`;  // deleteUsuario, deleteEmpresa, etc.
+  // Nombres de funciones en queries.js con casos especiales
+  const functionNameMap = {
+    'Usuario': { get: 'getUsuarios', create: 'createUsuario', update: 'updateUsuario', delete: 'deleteUsuario' },
+    'Empresa': { get: 'getEmpresas', create: 'createEmpresa', update: 'updateEmpresa', delete: 'deleteEmpresa' },
+    'Plan': { get: 'getPlanes', create: 'createPlan', update: 'updatePlan', delete: 'deletePlan' },
+    'Proveedor': { get: 'getProveedores', create: 'createProveedor', update: 'updateProveedor', delete: 'deleteProveedor' },
+    'Linea': { get: 'getLineas', create: 'createLinea', update: 'updateLinea', delete: 'deleteLinea' }
+  };
+  
+  const getFunctionName = functionNameMap[entity]?.get || `get${entity}s`;
+  const createFunctionName = functionNameMap[entity]?.create || `create${entity}`;
+  const updateFunctionName = functionNameMap[entity]?.update || `update${entity}`;
+  const deleteFunctionName = functionNameMap[entity]?.delete || `delete${entity}`;
   
   // GET - Obtener todos
   app.get(`/api/${entityName}`, async (req, res) => {
@@ -274,7 +282,17 @@ createCrudRoutes('Usuario', mockUsuarios, dbQueries);
 createCrudRoutes('Empresa', mockEmpresas, dbQueries);
 createCrudRoutes('Plan', mockPlanes, dbQueries);
 createCrudRoutes('Proveedor', mockProveedores, dbQueries);
-createCrudRoutes('Linea', mockLineas, dbQueries);
+// createCrudRoutes('Linea', mockLineas, dbQueries); // Comentado - usar rutas específicas
+
+// ==================== RUTAS ESPECÍFICAS DE ASESORES ====================
+// Rutas específicas para asesores (no usan el sistema CRUD genérico)
+const asesorRoutes = require('./routes/asesores');
+app.use('/api/asesores', asesorRoutes);
+
+// ==================== RUTAS ESPECÍFICAS DE LÍNEAS ====================
+// Rutas específicas para líneas (incluyen búsqueda por proveedor)
+const lineaRoutes = require('./routes/lineas');
+app.use('/api/lineas', lineaRoutes);
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
@@ -286,6 +304,9 @@ app.listen(PORT, () => {
   console.log('   GET /api/planes');
   console.log('   GET /api/proveedores');
   console.log('   GET /api/lineas');
+  console.log('   GET /api/asesores');
+  console.log('   GET /api/asesores/proveedor/:id');
+  console.log('   GET /api/asesores/puestos');
   console.log('   GET /api/dashboard/stats');
   console.log('   GET /api/lineas/renovaciones');
   console.log('   GET /api/dashboard/renovaciones');

@@ -7,6 +7,7 @@ import LineasPage from './pages/LineasPage';
 import EmpresasPage from './pages/EmpresasPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import PlanesPage from './pages/PlanesPage';
+import AsesoresPage from './pages/AsesoresPage';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
             <Route path="/empresas" element={<EmpresasPage />} />
             <Route path="/proveedores" element={<ProveedoresPage />} />
             <Route path="/planes" element={<PlanesPage />} />
+            <Route path="/asesores" element={<AsesoresPage />} />
           </Routes>
         </div>
       </div>

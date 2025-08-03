@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Users, Phone, Building, Briefcase, LayoutGrid, Settings } from 'lucide-react';
+import { Menu, X, Users, Phone, Building, Briefcase, LayoutGrid, Settings, UserCheck } from 'lucide-react';
 
 const navItems = [
   { name: 'Dashboard', icon: LayoutGrid, path: '/' },
   { name: 'Usuarios', icon: Users, path: '/usuarios' },
   { name: 'Líneas', icon: Phone, path: '/lineas' },
   { name: 'Proveedores', icon: Building, path: '/proveedores' },
+  { name: 'Asesores', icon: UserCheck, path: '/asesores' },
   { name: 'Empresas', icon: Briefcase, path: '/empresas' },
   { name: 'Planes', icon: Settings, path: '/planes' },
 ];

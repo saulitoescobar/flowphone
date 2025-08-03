@@ -127,7 +127,24 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
                   >
                     {columns.map((col) => (
                       <td key={col.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                        {col.key === 'usuario_display' ? (
+                        {col.key === 'proveedor_display' ? (
+                          <div className="flex flex-col">
+                            {item.proveedor_nombre ? (
+                              <div>
+                                <span className="font-medium text-orange-900 block">
+                                  {item.proveedor_nombre}
+                                </span>
+                                {item.proveedor_contacto && (
+                                  <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                                    {item.proveedor_contacto}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">{item.proveedor_display || 'Sin proveedor'}</span>
+                            )}
+                          </div>
+                        ) : col.key === 'usuario_display' ? (
                           <div className="flex flex-col">
                             {item[col.key]?.includes('Disponible') ? (
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -208,6 +225,91 @@ const DataTable = ({ title, data, columns, onAdd, onView, onEdit, onDelete, load
                           <span className="font-mono text-gray-900 font-medium">
                             {item[col.key]}
                           </span>
+                        ) : col.key === 'nombre_display' && item.proveedor_nombre ? (
+                          // Renderizado específico para asesores
+                          <div className="flex flex-col">
+                            <span className="font-bold text-blue-900 text-lg">
+                              {item.nombre}
+                            </span>
+                            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded mt-1 inline-block w-fit">
+                              👨‍💼 Asesor #{item.id}
+                            </span>
+                          </div>
+                        ) : col.key === 'nombre_display' ? (
+                          // Renderizado para proveedores
+                          <div className="flex flex-col">
+                            <span className="font-bold text-orange-900 text-lg">
+                              {item.nombre}
+                            </span>
+                            <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded mt-1 inline-block w-fit">
+                              🏢 Proveedor #{item.id}
+                            </span>
+                          </div>
+                        ) : col.key === 'puesto_display' ? (
+                          <div className="flex flex-col">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              item.puesto === 'ventas' ? 'bg-green-100 text-green-800' :
+                              item.puesto === 'post_ventas' ? 'bg-blue-100 text-blue-800' :
+                              item.puesto === 'soporte' ? 'bg-purple-100 text-purple-800' :
+                              item.puesto === 'gerencia' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {item.puesto === 'ventas' ? '💰 Ventas' :
+                               item.puesto === 'post_ventas' ? '🛠️ Post-Ventas' :
+                               item.puesto === 'soporte' ? '🔧 Soporte' :
+                               item.puesto === 'gerencia' ? '👔 Gerencia' :
+                               '📋 Otro'}
+                            </span>
+                          </div>
+                        ) : col.key === 'contacto_display' && item.correo ? (
+                          // Renderizado específico para contacto de asesores
+                          <div className="flex flex-col">
+                            <span className="font-medium text-indigo-900 block text-sm">
+                              📧 {item.correo}
+                            </span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {item.telefono_movil && (
+                                <span className="text-xs text-pink-600 bg-pink-50 px-2 py-1 rounded">
+                                  📱 {item.telefono_movil}
+                                </span>
+                              )}
+                              {item.telefono_fijo && (
+                                <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                                  📞 {item.telefono_fijo}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : col.key === 'contacto_display' ? (
+                          <div className="flex flex-col">
+                            {item.contacto ? (
+                              <div>
+                                <span className="font-medium text-blue-900 block">
+                                  {item.contacto}
+                                </span>
+                                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block mt-1">
+                                  📞 Contacto
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">Sin contacto</span>
+                            )}
+                          </div>
+                        ) : col.key === 'telefono_display' ? (
+                          <div className="flex flex-col">
+                            {item.telefono ? (
+                              <div>
+                                <span className="font-mono text-green-900 font-bold bg-green-50 px-3 py-2 rounded-lg border border-green-200 block">
+                                  {item.telefono}
+                                </span>
+                                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded inline-block mt-1">
+                                  📱 Teléfono
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">Sin teléfono</span>
+                            )}
+                          </div>
                         ) : (
                           item[col.key]
                         )}

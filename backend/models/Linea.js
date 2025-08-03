@@ -16,6 +16,24 @@ class Linea {
     return rows;
   }
 
+  static async getByProveedor(proveedorId) {
+    const [rows] = await pool.execute(`
+      SELECT l.*, 
+             u.nombre as usuario_nombre, 
+             e.nombre as empresa_nombre,
+             p.nombre as plan_nombre,
+             pr.nombre as proveedor_nombre
+      FROM lineas l 
+      LEFT JOIN usuarios u ON l.usuario_id = u.id
+      LEFT JOIN empresas e ON l.empresa_id = e.id
+      LEFT JOIN planes p ON l.plan_id = p.id
+      LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+      WHERE p.proveedor_id = ?
+      ORDER BY l.created_at DESC
+    `, [proveedorId]);
+    return rows;
+  }
+
   static async getById(id) {
     const [rows] = await pool.execute(`
       SELECT l.*, 

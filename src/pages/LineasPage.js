@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast';
 import UsuarioSelector from '../components/UsuarioSelector';
 import EmpresaSelector from '../components/EmpresaSelector';
 import PlanSelector from '../components/PlanSelector';
+import ProveedorSelector from '../components/ProveedorSelector';
 import { motion } from 'framer-motion';
 import { LineaService } from '../services';
 
@@ -30,6 +31,7 @@ const LineasPage = () => {
   const columns = [
     { key: '#', label: '#' },
     { key: 'numero', label: 'Número' },
+    { key: 'proveedor_display', label: 'PROVEEDOR' },
     { key: 'usuario_display', label: 'USUARIO' },
     { key: 'empresa_display', label: 'EMPRESA' },
     { key: 'plan_display', label: 'PLAN' },
@@ -48,11 +50,13 @@ const LineasPage = () => {
       console.log('🔄 Cargando líneas...');
       const data = await LineaService.getAll();
       console.log('✅ Líneas recibidas:', data);
+      console.log('🔍 Primera línea de ejemplo:', data[0]);
       
       // Agregar números ordinales y campos display mejorados a las líneas
       const lineasConNumeros = data.map((linea, index) => ({
         ...linea,
         '#': index + 1,
+        proveedor_display: linea.proveedor_nombre || 'Sin proveedor',
         usuario_display: linea.usuario_nombre ? 
           `${linea.usuario_nombre}${linea.usuario_dpi ? ` • DPI: ${linea.usuario_dpi}` : ''}` : 
           'Disponible',
@@ -63,6 +67,8 @@ const LineasPage = () => {
         costo_display: linea.precio ? `Q${Number(linea.precio).toLocaleString()}` : 'Sin costo',
         estado_display: linea.estado || 'activa'
       }));
+      
+      console.log('🔍 Primera línea procesada:', lineasConNumeros[0]);
       
       setLineas([...lineasConNumeros]); // Crear una nueva referencia del array
       setRefreshKey(prev => prev + 1); // Forzar re-render
@@ -125,6 +131,7 @@ const LineasPage = () => {
         usuario_id: data.usuario_id,
         empresa_id: data.empresa_id,
         plan_id: data.plan_id,
+        proveedor_id: data.proveedor_id,
         estado: data.estado || 'activa',
         fecha_activacion: data.fecha_activacion || null
       };
@@ -246,6 +253,24 @@ const LineasPage = () => {
                 placeholder="Ej: 3001234567"
                 required
               />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Proveedor *
+              </label>
+              <ProveedorSelector
+                value={formData.proveedor_id}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  proveedor_id: id,
+                  proveedor_nombre: nombre 
+                }))}
+                placeholder="Selecciona un proveedor"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                📡 Selecciona el operador (Tigo, Claro, Movistar, etc.)
+              </p>
             </div>
             
             <div>
@@ -379,6 +404,24 @@ const LineasPage = () => {
                 placeholder="Ej: 3001234567"
                 required
               />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Proveedor *
+              </label>
+              <ProveedorSelector
+                value={formData.proveedor_id}
+                onChange={(id, nombre) => setFormData(prev => ({ 
+                  ...prev, 
+                  proveedor_id: id,
+                  proveedor_nombre: nombre 
+                }))}
+                placeholder="Selecciona un proveedor"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                📡 Selecciona el operador (Tigo, Claro, Movistar, etc.)
+              </p>
             </div>
             
             <div>
