@@ -279,10 +279,15 @@ const createCrudRoutes = (entity, mockData, dbQueries) => {
 
 // ==================== CREAR RUTAS CRUD ====================
 createCrudRoutes('Usuario', mockUsuarios, dbQueries);
-createCrudRoutes('Empresa', mockEmpresas, dbQueries);
+// createCrudRoutes('Empresa', mockEmpresas, dbQueries); // Comentado - usar rutas específicas
 createCrudRoutes('Plan', mockPlanes, dbQueries);
 createCrudRoutes('Proveedor', mockProveedores, dbQueries);
 // createCrudRoutes('Linea', mockLineas, dbQueries); // Comentado - usar rutas específicas
+
+// ==================== RUTAS ESPECÍFICAS DE EMPRESAS ====================
+// Rutas específicas para empresas (incluyen relaciones con usuarios y líneas)
+const empresaRoutes = require('./routes/empresas');
+app.use('/api/empresas', empresaRoutes);
 
 // ==================== RUTAS ESPECÍFICAS DE ASESORES ====================
 // Rutas específicas para asesores (no usan el sistema CRUD genérico)

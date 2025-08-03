@@ -55,6 +55,40 @@ class EmpresaController {
     }
   }
 
+  static async getUsuarios(req, res) {
+    try {
+      const { empresaId } = req.params;
+      console.log(`🔍 Buscando usuarios de la empresa ID: ${empresaId}`);
+      
+      const usuarios = await Empresa.getUsuarios(empresaId);
+      console.log(`✅ Se encontraron ${usuarios.length} usuarios para la empresa`);
+      res.json(usuarios);
+    } catch (error) {
+      console.error('❌ Error al obtener usuarios de la empresa:', error);
+      res.status(500).json({ 
+        error: 'Error interno del servidor', 
+        details: error.message 
+      });
+    }
+  }
+
+  static async getLineas(req, res) {
+    try {
+      const { empresaId } = req.params;
+      console.log(`🔍 Buscando líneas de la empresa ID: ${empresaId}`);
+      
+      const lineas = await Empresa.getLineas(empresaId);
+      console.log(`✅ Se encontraron ${lineas.length} líneas para la empresa`);
+      res.json(lineas);
+    } catch (error) {
+      console.error('❌ Error al obtener líneas de la empresa:', error);
+      res.status(500).json({ 
+        error: 'Error interno del servidor', 
+        details: error.message 
+      });
+    }
+  }
+
   static async delete(req, res) {
     try {
       const { id } = req.params;

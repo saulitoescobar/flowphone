@@ -61,16 +61,23 @@ class LineaController {
   static async update(req, res) {
     try {
       const { id } = req.params;
+      console.log(`🔄 Actualizando línea ID: ${id}`);
+      console.log('📋 Datos recibidos:', JSON.stringify(req.body, null, 2));
+      
       const actualizado = await Linea.update(id, req.body);
+      console.log(`✅ Línea actualizada: ${actualizado}`);
       
       if (!actualizado) {
+        console.log('❌ Línea no encontrada');
         return res.status(404).json({ error: 'Línea no encontrada' });
       }
       
       const lineaActualizada = await Linea.getById(id);
+      console.log('📊 Línea actualizada:', JSON.stringify(lineaActualizada, null, 2));
       res.json(lineaActualizada);
     } catch (error) {
-      console.error('Error al actualizar línea:', error);
+      console.error('❌ Error al actualizar línea:', error);
+      console.error('❌ Stack trace:', error.stack);
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }

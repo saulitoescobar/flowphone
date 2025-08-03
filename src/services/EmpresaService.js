@@ -9,6 +9,14 @@ class EmpresaService {
     return ApiService.get(`/empresas/${id}`);
   }
 
+  static async getUsuarios(empresaId) {
+    return ApiService.get(`/empresas/${empresaId}/usuarios`);
+  }
+
+  static async getLineas(empresaId) {
+    return ApiService.get(`/empresas/${empresaId}/lineas`);
+  }
+
   static async create(empresa) {
     return ApiService.post('/empresas', empresa);
   }

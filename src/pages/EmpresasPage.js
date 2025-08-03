@@ -19,16 +19,32 @@ const EmpresasPage = () => {
   const [currentEmpresa, setCurrentEmpresa] = useState(null);
   const [formData, setFormData] = useState({});
   
+  // Estados para la vista detallada
+  const [empresaUsuarios, setEmpresaUsuarios] = useState([]);
+  const [empresaLineas, setEmpresaLineas] = useState([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  
   // Hook para las notificaciones
   const { showToast, ToastComponent } = useToast();
 
+  // Función para calcular el costo total mensual
+  const calcularCostoTotal = () => {
+    if (!empresaLineas || empresaLineas.length === 0) return 0;
+    return empresaLineas.reduce((total, linea) => {
+      const precio = parseFloat(linea.plan_precio) || 0;
+      return total + precio;
+    }, 0);
+  };
+
   // Configuración de columnas para la tabla
   const columns = [
-    { key: 'id', label: 'ID' },
-    { key: 'nombre', label: 'Nombre' },
-    { key: 'direccion', label: 'Dirección' },
-    { key: 'contacto', label: 'Contacto' },
-    { key: 'nit', label: 'NIT' }
+    { key: '#', label: '#' },
+    { key: 'nombre_display', label: 'EMPRESA' },
+    { key: 'nit_display', label: 'NIT' },
+    { key: 'direccion_display', label: 'DIRECCIÓN' },
+    { key: 'contacto_display', label: 'CONTACTO' },
+    { key: 'usuarios_display', label: 'EMPLEADOS' },
+    { key: 'lineas_display', label: 'LÍNEAS MÓVILES' }
   ];
 
   // Cargar empresas al montar el componente
@@ -40,7 +56,20 @@ const EmpresasPage = () => {
     try {
       setLoading(true);
       const data = await EmpresaService.getAll();
-      setEmpresas(data);
+      
+      // Agregar números ordinales y campos display mejorados
+      const empresasConDisplay = data.map((empresa, index) => ({
+        ...empresa,
+        '#': index + 1,
+        nombre_display: empresa.nombre || 'Sin nombre',
+        nit_display: empresa.nit || 'Sin NIT',
+        direccion_display: empresa.direccion || 'Sin dirección',
+        contacto_display: empresa.contacto || 'Sin contacto',
+        usuarios_display: empresa.total_usuarios || 0,
+        lineas_display: empresa.total_lineas || 0
+      }));
+      
+      setEmpresas(empresasConDisplay);
       setError(null);
     } catch (err) {
       setError('Error al cargar empresas: ' + err.message);
@@ -64,10 +93,28 @@ const EmpresasPage = () => {
     setFormData(empresa || {});
   };
 
-  const handleView = (id) => {
+  const handleView = async (id) => {
     const empresa = empresas.find(item => item.id === id);
     setCurrentEmpresa(empresa);
     setIsViewing(true);
+    
+    // Cargar usuarios y líneas de la empresa
+    setLoadingDetails(true);
+    try {
+      const [usuarios, lineas] = await Promise.all([
+        EmpresaService.getUsuarios(id),
+        EmpresaService.getLineas(id)
+      ]);
+      setEmpresaUsuarios(usuarios);
+      setEmpresaLineas(lineas);
+    } catch (err) {
+      console.error('Error al cargar detalles de empresa:', err);
+      showToast('Error al cargar detalles de la empresa', 'error');
+      setEmpresaUsuarios([]);
+      setEmpresaLineas([]);
+    } finally {
+      setLoadingDetails(false);
+    }
   };
 
   const handleDelete = (id) => {
@@ -118,6 +165,11 @@ const EmpresasPage = () => {
     setCurrentId(null);
     setCurrentEmpresa(null);
     setFormData({});
+    
+    // Limpiar estados de detalles
+    setEmpresaUsuarios([]);
+    setEmpresaLineas([]);
+    setLoadingDetails(false);
   };
 
   const handleChange = (e) => {
@@ -499,6 +551,192 @@ const EmpresasPage = () => {
                 Cerrar
               </button>
             </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Modal para ver detalles de empresa */}
+      <Modal
+        isOpen={isViewing}
+        onClose={handleCancel}
+        title={
+          <div className="flex items-center">
+            <span className="text-2xl mr-2">🏢</span>
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
+              {currentEmpresa?.nombre || 'Empresa'}
+            </span>
+          </div>
+        }
+        size="lg"
+      >
+        {currentEmpresa && (
+          <div className="space-y-6">
+            {/* Información básica de la empresa */}
+            <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 rounded-xl p-4 border border-indigo-200">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-lg p-3 border border-indigo-100">
+                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide flex items-center">
+                    <span className="mr-1">🆔</span> NIT Empresarial
+                  </span>
+                  <p className="text-sm font-bold text-indigo-800 mt-1">{currentEmpresa.nit || 'No especificado'}</p>
+                  <span className="text-xs text-indigo-500">Identificación fiscal</span>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-purple-100">
+                  <span className="text-xs font-bold text-purple-600 uppercase tracking-wide flex items-center">
+                    <span className="mr-1">📞</span> Contacto Principal
+                  </span>
+                  <p className="text-sm font-bold text-purple-800 mt-1">{currentEmpresa.contacto || 'No especificado'}</p>
+                  <span className="text-xs text-purple-500">Teléfono de oficina</span>
+                </div>
+              </div>
+              <div className="mt-3 bg-white rounded-lg p-3 border border-pink-100">
+                <span className="text-xs font-bold text-pink-600 uppercase tracking-wide flex items-center">
+                  <span className="mr-1">📍</span> Dirección Física
+                </span>
+                <p className="text-sm font-bold text-pink-800 mt-1">{currentEmpresa.direccion || 'No especificada'}</p>
+                <span className="text-xs text-pink-500">Ubicación de oficinas</span>
+              </div>
+            </div>
+
+            {/* Estadísticas rápidas */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200 text-center relative overflow-hidden">
+                <div className="absolute top-1 right-1 text-blue-200 text-3xl opacity-50">👥</div>
+                <div className="text-2xl font-bold text-blue-800">{currentEmpresa.total_usuarios || 0}</div>
+                <div className="text-xs text-blue-600 font-medium">Empleados</div>
+                <div className="text-xs text-blue-500 mt-1">Personal activo</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200 text-center relative overflow-hidden">
+                <div className="absolute top-1 right-1 text-green-200 text-3xl opacity-50">📱</div>
+                <div className="text-2xl font-bold text-green-800">{currentEmpresa.total_lineas || 0}</div>
+                <div className="text-xs text-green-600 font-medium">Líneas Móviles</div>
+                <div className="text-xs text-green-500 mt-1">Servicios activos</div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-lg p-4 border border-orange-200 text-center relative overflow-hidden">
+                <div className="absolute top-1 right-1 text-orange-200 text-3xl opacity-50">💰</div>
+                <div className="text-lg font-bold text-orange-800">Q{calcularCostoTotal().toLocaleString()}</div>
+                <div className="text-xs text-orange-600 font-medium">Costo Mensual</div>
+                <div className="text-xs text-orange-500 mt-1">Total en Quetzales</div>
+              </div>
+            </div>
+
+            {loadingDetails ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="text-gray-600">Cargando detalles...</div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Usuarios de la empresa */}
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+                    <h4 className="text-sm font-bold text-blue-800 flex items-center">
+                      <span className="text-blue-600 mr-2">👥</span>
+                      Empleados ({empresaUsuarios.length})
+                      <span className="ml-2 text-xs bg-blue-200 text-blue-700 px-2 py-1 rounded-full">Activos</span>
+                    </h4>
+                  </div>
+                  <div className="p-3 max-h-40 overflow-y-auto">
+                    {empresaUsuarios.length > 0 ? (
+                      <div className="space-y-2">
+                        {empresaUsuarios.slice(0, 5).map((usuario) => (
+                          <div key={usuario.id} className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-white rounded-lg border border-blue-100 hover:shadow-sm transition-all">
+                            <div className="flex-1">
+                              <div className="text-sm font-semibold text-gray-900 flex items-center">
+                                <span className="text-blue-500 mr-1">👤</span>
+                                {usuario.nombre}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                <span className="text-blue-600">✉️</span> {usuario.email}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">
+                                DPI: {usuario.dpi || 'No registrado'}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">
+                                {usuario.total_lineas || 0} 📱
+                              </span>
+                              <div className="text-xs text-blue-500 mt-1">
+                                {usuario.total_lineas === 1 ? 'línea' : 'líneas'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        {empresaUsuarios.length > 5 && (
+                          <div className="text-center text-xs text-blue-600 pt-2 font-medium">
+                            ➕ {empresaUsuarios.length - 5} empleados más...
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-gray-500 text-sm">
+                        <div className="text-4xl mb-2">🏢</div>
+                        <div>No hay empleados registrados</div>
+                        <div className="text-xs text-gray-400 mt-1">Agrega empleados para comenzar</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Líneas de la empresa */}
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100 rounded-t-xl">
+                    <h4 className="text-sm font-bold text-green-800 flex items-center">
+                      <span className="text-green-600 mr-2">📱</span>
+                      Líneas Móviles ({empresaLineas.length})
+                      <span className="ml-2 text-xs bg-green-200 text-green-700 px-2 py-1 rounded-full">Servicios</span>
+                    </h4>
+                  </div>
+                  <div className="p-3 max-h-40 overflow-y-auto">
+                    {empresaLineas.length > 0 ? (
+                      <div className="space-y-2">
+                        {empresaLineas.slice(0, 5).map((linea) => (
+                          <div key={linea.id} className="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-white rounded-lg border border-green-100 hover:shadow-sm transition-all">
+                            <div className="flex-1">
+                              <div className="text-sm font-semibold text-gray-900 flex items-center">
+                                <span className="text-green-500 mr-1">📞</span>
+                                {linea.numero}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                <span className="text-green-600">👤</span> {linea.usuario_nombre || 'Sin asignar'}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">
+                                📡 {linea.proveedor_nombre} • {linea.plan_nombre}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                                linea.estado === 'activa' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {linea.estado === 'activa' ? '🟢 Activa' : '🔴 Inactiva'}
+                              </span>
+                              {linea.plan_precio && (
+                                <div className="text-xs text-green-600 mt-1 font-bold">
+                                  Q{parseInt(linea.plan_precio).toLocaleString()}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {empresaLineas.length > 5 && (
+                          <div className="text-center text-xs text-green-600 pt-2 font-medium">
+                            ➕ {empresaLineas.length - 5} líneas más...
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-gray-500 text-sm">
+                        <div className="text-4xl mb-2">📱</div>
+                        <div>No hay líneas registradas</div>
+                        <div className="text-xs text-gray-400 mt-1">Agrega líneas móviles para los empleados</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>
